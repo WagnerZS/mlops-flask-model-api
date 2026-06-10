@@ -1,10 +1,16 @@
 from flask import Flask, jsonify
+import joblib
 import os
 
 app = Flask(__name__)
 
 MODEL_PATH = os.path.join("models", "model.joblib")
 METRICS_PATH = os.path.join("models", "metrics.json")
+
+# Carrega o modelo treinado
+if not os.path.exists(MODEL_PATH):
+    raise FileNotFoundError("O arquivo 'model.joblib' não foi encontrado na pasta 'models/'.")
+model = joblib.load(MODEL_PATH)
 
 @app.route('/', methods=['GET'])
 def hello_world():
