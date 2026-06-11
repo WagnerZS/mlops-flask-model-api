@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 import joblib
+import json
 import os
 
 app = Flask(__name__)
@@ -12,6 +13,13 @@ if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError("O arquivo 'model.joblib' não foi encontrado na pasta 'models/'.")
 model = joblib.load(MODEL_PATH)
 
+#carrega as metrics (opcional)
+if os.path.exists(METRICS_PATH):
+    with open(METRICS_PATH, "r") as f:
+        metrics = json.load(f)
+else:
+    metrics = {}
+
 @app.route('/', methods=['GET'])
 def hello_world():
     return jsonify({"message": "Hello World, Flask API is running!"})
@@ -23,6 +31,11 @@ def health():
 @app.route('/predict', methods=['GET'])
 def predict():
     return jsonify({"message": "OK"})
+
+@app.route('/metrics', methods=['GET'])
+def get_metrics():
+    """Retorna as métricas do modelo treinado"""
+    return jsonify(metrics)
 
 if __name__ == '__main__':
     app.run(debug=True)
